@@ -3,7 +3,7 @@ import {
   SubscribeMessage,
   WebSocketGateway,
   WebSocketServer,
-  OnGatewayConnection,
+  OnGatewayDisconnect,
   WsResponse,
 } from '@nestjs/websockets';
 import { from, Observable } from 'rxjs';
@@ -15,17 +15,38 @@ import { Server } from 'socket.io';
     origin: '*',
   },
 })
-export class EventsGateway {
-  private clients = {};
+export class EventsGateway implements OnGatewayDisconnect {
+  private clients;
   constructor() {
     this.clients = {};
   }
+
   @WebSocketServer()
   server: Server;
 
   @SubscribeMessage('connect:room')
-  // events(@MessageBody() data: any): Observable<WsResponse<number>> {
+  onConnectRoom(client, data): any {
+    client.join(data.room);
+    this.clients[client.id] = data.room;
+    this.server
+      .to(data.room)
+      .emit('events', { type: 'user:connected', id: client.id });
+  }
+
+  @SubscribeMessage('events')
   onEvent(client, data): any {
-    console.log('123123', data, client);
+    const room = Array.from(client.rooms)[1];
+    if (room) {
+      this.server.to(room.toString()).emit('events', data);
+    }
+  }
+
+  handleDisconnect(client: any) {
+    const room = this.clients[client.id];
+    if (room) {
+      this.server
+        .to(room)
+        .emit('events', { type: 'user:disconnected', id: client.id });
+    }
   }
 }
