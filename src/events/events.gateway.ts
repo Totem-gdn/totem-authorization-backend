@@ -37,7 +37,9 @@ export class EventsGateway implements OnGatewayDisconnect {
   onEvent(client, data): any {
     const room = Array.from(client.rooms)[1];
     if (room) {
-      this.server.to(room.toString()).emit('events', data);
+      this.server
+        .to(room.toString())
+        .emit('events', { type: 'user:data', id: client.id, ...data });
     }
   }
 
