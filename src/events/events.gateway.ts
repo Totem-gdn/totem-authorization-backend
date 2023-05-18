@@ -26,6 +26,9 @@ export class EventsGateway implements OnGatewayDisconnect {
 
   @SubscribeMessage('connect:room')
   onConnectRoom(client, data): any {
+    if (typeof data === 'string') {
+      data = JSON.parse(data);
+    }
     client.join(data.room);
     this.clients[client.id] = data.room;
     this.server
