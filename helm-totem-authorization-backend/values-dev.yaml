@@ -45,10 +45,9 @@ ingress:
         - path: /notifications
             pathType: Prefix
             backend:
-              service:
-                name: dev-totem-authorization-backend
-                port:
-                  number: 8080
+              serviceName: dev-totem-authorization-backend
+              servicePort: 8080
+
   tls: []
 
 resources:
@@ -75,4 +74,3 @@ tolerations:
 
 env:
   ENV: ""
-
