@@ -13,11 +13,14 @@ image:
 fullnameOverride: "dev-totem-authorization-backend"
 
 containerPort: 3000
+websocketPort: 8080
 
 service:
   type: NodePort
   port: 80
   targetPort: 3000
+  websocketport: 8080
+  websockettargetPort: 8080
 
 ingress:
   enabled: true
@@ -27,6 +30,7 @@ ingress:
     alb.ingress.kubernetes.io/group.name: main
     alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:us-east-2:667950714614:certificate/302a21b6-52db-4471-a6e5-b530540345a0
     alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80},{"HTTPS": 443}]'
+    alb.ingress.kubernetes.io/target-group-attributes: stickiness.enabled=true,stickiness.lb_cookie.duration_seconds=60
     alb.ingress.kubernetes.io/ssl-redirect: '443'
     alb.ingress.kubernetes.io/scheme: internet-facing
   hosts:
@@ -37,6 +41,13 @@ ingress:
           backend:
             serviceName: dev-totem-authorization-backend
             servicePort: 3000
+        - path: /notifications
+            pathType: Prefix
+            backend:
+              service:
+                name: dev-totem-authorization-backend
+                port:
+                  number: 8080
   tls: []
 
 resources:

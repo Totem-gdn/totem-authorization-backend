@@ -42,6 +42,9 @@ spec:
             - name: http
               containerPort: {{ .Values.containerPort }}
               protocol: TCP
+            - name: websocket
+              containerPort: {{ .Values.websocketPort }}
+              protocol: TCP
           {{- with .Values.command }}
           command: {{ toYaml . | nindent 12 }}
           {{- end }}
