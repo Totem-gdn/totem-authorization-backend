@@ -11,5 +11,10 @@ spec:
       targetPort: {{ .Values.service.targetPort }}
       protocol: TCP
       name: http
+    - port: {{ .Values.service.websocketport }}
+      targetPort: {{ .Values.service.websockettargetPort }}
+      protocol: TCP
+      name: http-8080
+  sessionAffinity: ClientIP
   selector:
     {{- include "kor-base.selectorLabels" . | nindent 4 }}
