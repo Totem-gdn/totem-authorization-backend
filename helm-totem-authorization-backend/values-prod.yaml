@@ -13,6 +13,7 @@ image:
 fullnameOverride: "totem-authorization-backend"
 
 containerPort: 3000
+websocketPort: 8080
 
 service:
   type: NodePort
